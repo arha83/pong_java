@@ -106,7 +106,8 @@ public class Main{
     }
 }
 ```
-This code checks for input in loop while it is not `null`. As soon as I press a key on my keyboard, `input` variable will contain the character I typed so the while loop will be stopped and the program continues. (apparently) There should be a small delay in the loop for the input to be captured.
+This code checks for input in loop while it is `null`. As soon as I press a key on my keyboard, `input` variable will contain the character I typed so the while loop will be stopped and the program continues. (apparently) There should be a small delay in the loop for the input to be captured.
+
 On the subject of delays...
 
 ### delays
