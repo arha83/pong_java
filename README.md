@@ -1,19 +1,19 @@
 A pong game in java (I don't like java aaaaaaaaaaaa 😩)
 
 ## Table of contents
-0. [Table of contents](https://github.com/arha83/pong_java/edit/master/README.md#table-of-contents) (Recursion haha 😉)
-1. [Getting started](https://github.com/arha83/pong_java/edit/master/README.md#getting-started)
-   - [Creating a simple window](https://github.com/arha83/pong_java/edit/master/README.md#creating-a-simple-window)
-   - [Coordination system in programming](https://github.com/arha83/pong_java/tree/master?tab=readme-ov-file#coordination-system-in-programming)
-   - [Colors in programming](https://github.com/arha83/pong_java/tree/master?tab=readme-ov-file#colors-in-programming)
-   - [Drawing a circle](https://github.com/arha83/pong_java/tree/master?tab=readme-ov-file#drawing-a-circle)
-   - [Clearing the window](https://github.com/arha83/pong_java/tree/master?tab=readme-ov-file#clearing-the-window)
-   - [Getting pressed keys](https://github.com/arha83/pong_java/tree/master?tab=readme-ov-file#getting-pressed-keys)
-   - [Delays](https://github.com/arha83/pong_java/tree/master?tab=readme-ov-file#delays)
-2. [Adding more features](https://github.com/arha83/pong_java/edit/master/README.md#adding-more-features-to-simplegamewindow-class)
-   - [Drawing a rectangle](https://github.com/arha83/pong_java/edit/master/README.md#drawing-a-rectangle)
-   - [Drawing a line](https://github.com/arha83/pong_java/edit/master/README.md#drawing-a-line)
-   - [Drawing an image](https://github.com/arha83/pong_java/edit/master/README.md#drawing-an-image)
+0. [Table of contents](#table-of-contents) (Recursion haha 😉)
+1. [Getting started](#getting-started)
+   - [Creating a simple window](#creating-a-simple-window)
+   - [Coordination system in programming](#coordination-system-in-programming)
+   - [Colors in programming](#colors-in-programming)
+   - [Drawing a circle](#drawing-a-circle)
+   - [Clearing the window](#clearing-the-window)
+   - [Getting pressed keys](#getting-pressed-keys)
+   - [Delays](#delays)
+2. [Adding more features](#adding-more-features-to-simplegamewindow-class)
+   - [Drawing a rectangle](#drawing-a-rectangle)
+   - [Drawing a line](#drawing-a-line)
+   - [Drawing an image](#drawing-an-image)
 
 
 ## Getting started
