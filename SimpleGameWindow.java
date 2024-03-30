@@ -111,7 +111,6 @@ public class SimpleGameWindow {
                 Graphics2D g2d = (Graphics2D) image.getGraphics();
                 g2d.setColor(color);
                 g2d.fillRect(x, y, w, h);
-                g2d.drawRo
                 panel.repaint();
             }
         });
