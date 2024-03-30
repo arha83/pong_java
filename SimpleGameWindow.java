@@ -97,6 +97,43 @@ public class SimpleGameWindow {
             }
         });
     }
+    // this method draws a filled rectangle
+    // parameters:
+    //   x           -> rectangle upper left corner x
+    //   y           -> rectangle upper left corner y
+    //   w           -> rectangle width (x axis)
+    //   h           -> rectangle height (y axis)
+    //   color       -> circle color object
+    public void drawFillRectangle(int x, int y, int w, int h, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.fillRect(x, y, w, h);
+                g2d.drawRo
+                panel.repaint();
+            }
+        });
+    }
+    // this method draws a hollow rectangle
+    // parameters:
+    //   x           -> rectangle upper left corner x
+    //   y           -> rectangle upper left corner y
+    //   w           -> rectangle width (x axis)
+    //   h           -> rectangle height (y axis)
+    //   color       -> circle color object
+    public void drawRectangle(int x, int y, int w, int h, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.drawRect(x, y, w, h);
+                panel.repaint();
+            }
+        });
+    }
     // this method clears the frame
     public void clear() {
         SwingUtilities.invokeLater(new Runnable() {
