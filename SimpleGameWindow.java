@@ -103,7 +103,7 @@ public class SimpleGameWindow {
     //   y           -> rectangle upper left corner y
     //   w           -> rectangle width (x axis)
     //   h           -> rectangle height (y axis)
-    //   color       -> circle color object
+    //   color       -> rectangle color
     public void drawFillRectangle(int x, int y, int w, int h, Color color){
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -121,7 +121,7 @@ public class SimpleGameWindow {
     //   y           -> rectangle upper left corner y
     //   w           -> rectangle width (x axis)
     //   h           -> rectangle height (y axis)
-    //   color       -> circle color object
+    //   color       -> rectangle color
     public void drawRectangle(int x, int y, int w, int h, Color color){
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -135,11 +135,11 @@ public class SimpleGameWindow {
     }
     // this method draws a line
     // parameters:
-    //   x1          -> rectangle upper left corner x
-    //   y1          -> rectangle upper left corner y
-    //   x2          -> rectangle width (x axis)
-    //   y2          -> rectangle height (y axis)
-    //   color       -> circle color object
+    //   x1          -> line point 1 x
+    //   y1          -> line point 1 y
+    //   x2          -> line point 2 x
+    //   y2          -> line point 2 y
+    //   color       -> line color
     public void drawLine(int x1, int y1, int x2, int y2, Color color){
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -147,6 +147,21 @@ public class SimpleGameWindow {
                 Graphics2D g2d = (Graphics2D) image.getGraphics();
                 g2d.setColor(color);
                 g2d.drawLine(x1, y1, x2, y2);
+                panel.repaint();
+            }
+        });
+    }
+    // this method draws an image
+    // parameters:
+    //   x           -> image upper left corner x
+    //   y           -> image upper left corner y
+    //   path        -> circle color object
+    public void drawImage(int x, int y, Image img){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.drawImage(img, x, y, panel);
                 panel.repaint();
             }
         });
