@@ -133,6 +133,24 @@ public class SimpleGameWindow {
             }
         });
     }
+    // this method draws a line
+    // parameters:
+    //   x1          -> rectangle upper left corner x
+    //   y1          -> rectangle upper left corner y
+    //   x2          -> rectangle width (x axis)
+    //   y2          -> rectangle height (y axis)
+    //   color       -> circle color object
+    public void drawLine(int x1, int y1, int x2, int y2, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.drawLine(x1, y1, x2, y2);
+                panel.repaint();
+            }
+        });
+    }
     // this method clears the frame
     public void clear() {
         SwingUtilities.invokeLater(new Runnable() {
