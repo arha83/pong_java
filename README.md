@@ -1,5 +1,21 @@
 A pong game in java (I don't like java aaaaaaaaaaaa 😩)
 
+## Table of contents
+0. [Table of contents](#table-of-contents) (Recursion haha 😉)
+1. [Getting started](#getting-started)
+   - [Creating a simple window](#creating-a-simple-window)
+   - [Coordination system in programming](#coordination-system-in-programming)
+   - [Colors in programming](#colors-in-programming)
+   - [Drawing a circle](#drawing-a-circle)
+   - [Clearing the window](#clearing-the-window)
+   - [Getting pressed keys](#getting-pressed-keys)
+   - [Delays](#delays)
+2. [Adding more features](#adding-more-features-to-simplegamewindow-class)
+   - [Drawing a rectangle](#drawing-a-rectangle)
+   - [Drawing a line](#drawing-a-line)
+   - [Drawing an image](#drawing-an-image)
+
+
 ## Getting started
 ### Creating a simple window
 Create an instance of `SimpleGameWindow` class in your main code:
@@ -73,7 +89,7 @@ The above code draws a cyan circle, clears the screen and then draws a pink (r=2
 
 ![pink circle](screenshots/screenshot3.png)
 
-### getting pressed keys
+### Getting pressed keys
 As you open your window, every key you press on your keyboard is captured and stored in a que. You can get pressed keys via `getKey` method. every time you use this method, the key you had pressed comes out of the que and you can sotre it in a suitable variable. If the que is empty, the method returns `null`.
 
 ```java
@@ -110,7 +126,7 @@ This code checks for input in loop while it is `null`. As soon as I press a key 
 
 On the subject of delays...
 
-### delays
+### Delays
 Sometimes we need our program to stop for a some amount of time. To make some delays in your program use the following code:
 
 ```java
@@ -122,10 +138,272 @@ the number you put in `Thread.sleep()` is delay time in milliseconds which is 20
 
 
 
+## Adding more features to `SimpleGameWindow` class
+For now, our `SimpleGameWindow` class has very limited features, including: drawing circle, clearing the frame, recording typed keys. To have some reasonably good tools for game development, we need to add more functionality to this class. Currently, this is the base class we have (It didn't have comments, so I added them 😒):
+```java
+// importing packages (aka libraries)
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.util.LinkedList;
+import java.util.Queue;
+// importing other packages (other libraries)
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+// window class
+// develop the project by changing this class
+public class SimpleGameWindow {
+    // window related objects
+    private JFrame frame;
+    private JPanel panel;
+    private Image image;
+    // window variables
+    private int width;
+    private int height;
+    // a que for storing pressed keys
+    private Queue<Character> keyQueue;
+    // class constructor
+    // this method is run when a new instance of this class is created
+    // parameters:
+    //   width      -> desired window width in pixels
+    //   height     -> desired window height in pixels
+    //   title      -> window title that appears on top bar
+    public SimpleGameWindow(int width, int height, String title){
+        // setting size variables for futures uses
+        this.height = height;
+        this.width = width;
+        // initializing the que
+        keyQueue = new LinkedList<>();
+        // some giberrish about initializing the window and frame and blah blah blah....
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        frame = new JFrame(title);
+        panel = new JPanel(true) {
+            @Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 0, 0, null); //TODO: Attend null observer later
+            }
+        };
+        frame.setSize(width, height);
+        panel.setSize(width, height);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.add(panel, BorderLayout.CENTER);
+        frame.setFocusable(false);
+        panel.setFocusable(true);
+        panel.requestFocus();
+        // other gibberish about setting key listener and etc...
+        KeyListener keyListener = new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent arg0) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent arg0) {
+            }
+
+            @Override
+            public void keyTyped(KeyEvent ke) {
+                keyQueue.add(ke.getKeyChar());
+            }
+        };
+        panel.addKeyListener(keyListener);
+        // showing the window
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                frame.setVisible(true);
+            }
+        });
+    }
+    // this method draws a complex circle
+    // parameters:
+    //   x           -> circle center x
+    //   y           -> circle center y
+    //   r           -> circle radius
+    //   colour      -> circle color object (not colour 😒)
+    public void drawSimpleCircle(int x, int y, int r, Color colour)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(colour);
+                g2d.fillOval(x - r, y - r, r, r);
+                panel.repaint();
+            }
+        });
+    }
+    // this method clears the frame
+    public void clear() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.clearRect(0, 0, width, height);
+                panel.repaint();
+            }
+        });
+    }
+    // this method gets a key from user (like getch() in c++ but worse)
+    public Character getKey() {
+        if (!keyQueue.isEmpty())
+            return keyQueue.poll();
+        return null;
+    }
+}
+```
+
+To make things easy, we'll only make different versions of `drawSimpleCircle` method to draw different things on screen.
+
+P.S. *What is a simple circle??? Is there a complex circle too!?*
+
+### Drawing a rectangle
+```java
+    // this method draws a filled rectangle
+    // parameters:
+    //   x           -> rectangle upper left corner x
+    //   y           -> rectangle upper left corner y
+    //   w           -> rectangle width (x axis)
+    //   h           -> rectangle height (y axis)
+    //   color       -> rectangle color
+    public void drawFillRectangle(int x, int y, int w, int h, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.fillRect(x, y, w, h);
+                panel.repaint();
+            }
+        });
+    }
+    // this method draws a hollow rectangle
+    // parameters:
+    //   x           -> rectangle upper left corner x
+    //   y           -> rectangle upper left corner y
+    //   w           -> rectangle width (x axis)
+    //   h           -> rectangle height (y axis)
+    //   color       -> rectangle color
+    public void drawRectangle(int x, int y, int w, int h, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.drawRect(x, y, w, h);
+                panel.repaint();
+            }
+        });
+    }
+```
+
+These two methods will be added to `SimpleGameWindow` class. Using below code will draw them on the window:
+```java
+import java.awt.Color;
+
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+
+        sgw.drawRectangle(10, 10, 40, 30, new Color(255, 0, 0));
+        sgw.drawFillRectangle(70, 10, 40, 30, new Color(0, 255, 0));
+    }
+}
+```
+![rectangles](screenshots/screenshot4.png)
+
+In the class methods, `g2d.fillRoundRect()` and `g2d.fillRoundRect()` are also available for drawing rectangles with round corners.
+
+### Drawing a line
+like before we are adding a new method to class to draw a line
+```java
+    // this method draws a line
+    // parameters:
+    //   x1          -> line point 1 x
+    //   y1          -> line point 1 y
+    //   x2          -> line point 2 x
+    //   y2          -> line point 2 y
+    //   color       -> line color
+    public void drawLine(int x1, int y1, int x2, int y2, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.drawLine(x1, y1, x2, y2);
+                panel.repaint();
+            }
+        });
+    }
+```
+
+drawing the line (shortened):
+```java
+sgw.drawLine(10, 20, 50, 200, new Color(0,0,255));
+```
+![line](screenshots/screenshot5.png)
+
+### Drawing an image
+Drawing images is very critical for game development, since it allows developers to draw complex shapes and display animations. Since we are using an external file, the image displaying process is a bit harder. first we should define an `Image` object and load the image to it using the `Toolkit` class. Then we need to wait for image to be loaded by using a `MediaTracker` instance. After doing these things, we are safe to draw the image 😵.
+```java
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.MediaTracker;
+import javax.swing.JPanel;
+
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+
+        // loading the image
+        Image img= Toolkit.getDefaultToolkit().getImage("images/troll.png");
+        // waiting for image to be loaded
+        MediaTracker mediaTracker= new MediaTracker(new JPanel());
+        mediaTracker.addImage(img, 0);
+        try{mediaTracker.waitForAll();}
+        catch(InterruptedException e){e.printStackTrace();}
+        // drawing the image
+        sgw.drawImage(10, 10, img);
+    }
+}
+```
+
+The class method would be the easy part:
+```java
+    // this method draws an image
+    // parameters:
+    //   x           -> image upper left corner x
+    //   y           -> image upper left corner y
+    //   path        -> circle color object
+    public void drawImage(int x, int y, Image img){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.drawImage(img, x, y, panel);
+                panel.repaint();
+            }
+        });
+    }
+```
+
+The result:
+
+![drawn image](screenshots/screenshot6.png)
 
 
 
-# ========🏗UNDER CONSTRUCTION🏗========
+
+
+
+# 🏗UNDER CONSTRUCTION🏗
 ![to be continued](images/tbc.png)
 
 
