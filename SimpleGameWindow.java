@@ -166,6 +166,21 @@ public class SimpleGameWindow {
             }
         });
     }
+    // this method draws a sprite
+    public void drawSprite(Sprite spr){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                Image img= spr.getFrame();
+                int cornerX, cornerY;
+                cornerX= spr.getX() - img.getWidth(null)/2;
+                cornerY= spr.getY() - img.getHeight(null)/2;
+                g2d.drawImage(img, cornerX, cornerY, panel);
+                panel.repaint();
+            }
+        });
+    }
     // this method clears the frame
     public void clear() {
         SwingUtilities.invokeLater(new Runnable() {
