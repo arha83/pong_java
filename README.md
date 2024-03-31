@@ -14,7 +14,13 @@ A pong game in java (I don't like java aaaaaaaaaaaa 😩)
    - [Drawing a rectangle](#drawing-a-rectangle)
    - [Drawing a line](#drawing-a-line)
    - [Drawing an image](#drawing-an-image)
-
+3. [Game sprites](#game-sprites)
+   - [Sprite properties](#sprite-properties)
+   - [Sprite constructor](#sprite-constructor)
+   - [Getter and setter for x and y](#getter-and-setter-for-x-and-y)
+   - [Drawing the sprite](#drawing-the-sprite)
+   - [Changing the frame](#changing-the-frame)
+   - [Using the sprite class](#using-the-sprite-class)
 
 ## Getting started
 ### Creating a simple window
@@ -398,6 +404,143 @@ The result:
 
 ![drawn image](screenshots/screenshot6.png)
 
+## Game sprites
+In 2D games, evey animation or image you see is called a sprite. To have have a proper game, we need to design a basic `Sprite` class to use later in our game development.
+
+### Sprite properties
+When designing a class, first we need to define its properties. Class properties are variables and object instances of that class. Now, let's think what a sprite class should have as its properties. Thinking of a sprite as an animation will make this job a little bit easier. Animations are basically an array of images that change over time. So, we have figured out that for our `Sprite` class we need an array of images and number of images to load for animation. When animations are drawn, we should know where to draw them so we will need two variables for x and y coordinates of the sprite. At last, we should know which frame of animation we should draw, so we will add an index variable to our list of class properties. With our class properties defined, we can now write a java class for it:
+```java
+import java.awt.Image;
+
+public class Sprite {
+    private Image frames[]; // image array
+    private int n; // number of frames
+    private int x, y; // drawing coordinates
+    private int index; // index of current frame
+}
+```
+
+### Sprite constructor
+Classes can have constructor functions. Constructor functions are run when a new instance of the class is created and their purpose is to do intializations (E.G. loading images) of that instance and its properties. Multiple constructors can be written for different cases of initializing.
+I want to put frames of the animations I want in a folder and name those frames from 0 to any number. Based on this, my constructor function would get that dirctory path and number of frames as its paramters. In that function, `frames` array will be filled with images loaded from that directory using a loop. The constructor should get two x and y values for locations of that sprite as well.
+```java
+    // class constructor
+    // parameters:
+    //   path       -> path of directory which the frames are stored in
+    //   n          -> number of frames in the directory
+    //   x          -> x coordinate of the sprite
+    //   y          -> y coordinate of the sprite
+    public Sprite(String path, int n, int x, int y){
+        // loading the images and wait to be loaded
+        frames= new Image[n]; // array definition
+        MediaTracker mediaTracker= new MediaTracker(new JPanel());
+        for(int i=0; i < n; i++){
+            Image img= Toolkit.getDefaultToolkit().getImage(path + "/" + i + ".png");
+            mediaTracker.addImage(img, i);
+            frames[i]= img;
+        }
+        // waiting
+        try{mediaTracker.waitForAll();}
+        catch(InterruptedException e){e.printStackTrace();}
+        // setting class properties values
+        this.n= n;
+        this.x= x;
+        this.y= y;
+        index= 0; // initial index is 0
+    }
+```
+
+Don't forget `import java.awt.MediaTracker;` and `import java.awt.Toolkit;` at the top of the class file.
+
+### Getter and setter for x and y
+x and y variables are better to be private. To access them from other classes, we should add their getter and setter methods to `Sprite` class.
+```java
+    // these methods get and set x and y
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
+    }
+    public void setX(int x){
+        this.x= x;
+    }
+    public void setY(int y){
+        this.y= y;
+    }
+```
+
+### Drawing the sprite
+The `Sprite` class should have a method to return `Image` object of its current frame, so we can draw it.
+```java
+    // this method returns current frame
+    public Image getFrame(){
+        return frames[index];
+    }
+```
+
+Just like the [section 2](#adding-more-features-to-simplegamewindow-class) we are going to add a new method to `SimpleGameWindow` class to draw a sprite.
+
+```java
+    // this method draws a sprite
+    public void drawSprite(Sprite spr){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                Image img= spr.getFrame();
+                int cornerX, cornerY;
+                cornerX= spr.getX() - img.getWidth(null)/2;
+                cornerY= spr.getY() - img.getHeight(null)/2;
+                g2d.drawImage(img, cornerX, cornerY, panel);
+                panel.repaint();
+            }
+        });
+    }
+```
+
+I wanted x and y of the sprite to be interpreted as position of its center. Because of that, some small calculations are done to get position of upper right corner of the image before drawing.
+
+### Changing the frame
+changing the `index` variable of the sprite changes its frame... *Simplicity itself*. So bascially we need a getter and setter function for `index` variable. For more coolness, an additional method will be added to change index to next frame automatically 😎.
+```java
+    // these methods get, set, or change the frame
+    public int getIndex(){
+        return index;
+    }
+    public void setIndex(int index){
+        this.index= index;
+    }
+    public void next(){
+        index++;
+        // if index is on the last frame, start over the animation (set index to 0)
+        if(index >= n) index= 0;
+    }
+```
+
+### Using the sprite class
+For this example, we are going to display an animation on loop
+```java
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        // defining the sprite with 24 frames with center of (200,250)
+        Sprite sprite= new Sprite("assets/animations/demo", 24, 200, 250);
+
+        while(true){
+            // draw the sprite and change to next frame
+            sgw.drawSprite(sprite);
+            sprite.next();
+            // small delay
+            try{
+                Thread.sleep(20);
+            } catch(InterruptedException e){};
+        }
+    }
+}
+```
+
+![demo animation](screenshots/screenshot7.gif)
 
 
 
