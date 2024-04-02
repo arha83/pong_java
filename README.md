@@ -1,4 +1,23 @@
-A pong game in java (I don't like java aaaaaaaaaaaa 😩)
+### A pong game in java (I don't like java aaaaaaaaaaaa 😩)
+This is an assignment project for my advanced programming class. The goal is to make a pong game using `SimpleGameWindow.class` file provided by TA.
+
+Features that the game must have (based on TA's sayings):
+- Graphical User Interface
+- Gameplay mechanics *(Is there a game without gameplay mechanics???)*
+- Player controls *(Pong is not a zero-player game; Ofcourse it has player input 😑)*
+- Collision detection
+- Score tracking
+- Game over conditions
+- Customization
+- Power-ups
+
+Extra features for extra points:
+- AI opponent
+- Difficulty levels
+- Multiplayer Network Support *(I'm not gonna do this LOL)*
+- Animations
+- Version control *(That's why you are here)*
+- Code comments
 
 ## Table of contents
 0. [Table of contents](#table-of-contents) (Recursion haha 😉)
@@ -21,6 +40,12 @@ A pong game in java (I don't like java aaaaaaaaaaaa 😩)
    - [Drawing the sprite](#drawing-the-sprite)
    - [Changing the frame](#changing-the-frame)
    - [Using the sprite class](#using-the-sprite-class)
+4. [Hitboxes](#hitboxes)
+   - [Hitbox class](#hitbox-class)
+   - [Getter and setter for hitbox variables](#getter-and-setter-for-hitbox-variables)
+   - [Collision detection](#collision-detection)
+   - [Drawing the hitboxes](#drawing-the-hitboxes)
+   - [Testing the hitboxes](#testing-the-hitboxes)
 
 ## Getting started
 ### Creating a simple window
@@ -542,7 +567,129 @@ public class Main{
 
 ![demo animation](screenshots/screenshot7.gif)
 
+## Hitboxes
+In video games, each object has a hitbox. A hitbox determines object's actual shape which effects and gets effected by the game environment, unlike the sprites that are only what we see of game objects and usually don't effect gameplay. If you’ve ever played a game and frustratedly shouted "I totally hit you!" you have probably experienced hitboxes that don’t quite line up with their sprites.
 
+![hitbox example](images/hitbox.png)
+
+### Hitbox class
+A hitbox can have different shapes like circle, rectangle, triangle, etc. For this game we will only stick to rectangle hitboxes. like what we did in [section 3](#sprite-properties), we should first define our hitbox properties. Since the hitbox is a rectangle, it makes sense to have rectangle coordination variables (top left corner x, top left corner y, width, height) as its class properties. The constructor method simply sets the initial value of the variables.
+
+```java
+public class Hitbox {
+    private int x; // top left corner x
+    private int y; // top left corner y
+    private int width; // width (obviously... 😐)
+    private int height; // height (obviously... 😐)
+    // constructor method.
+    // parameters: explain themselves
+    public Hitbox(int x, int y, int w, int h){
+        this.x= x;
+        this.y= y;
+        width= w;
+        height= h;
+    }
+}
+```
+
+### Getter and setter for hitbox variables
+Easy.
+```java
+    // getters and setters
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
+    }
+    public int getWidth(){
+        return width;
+    }
+    public int getHeight(){
+        return height;
+    }
+    public void setX(int x){
+        this.x= x;
+    }
+    public void setY(int y){
+        this.y= y;
+    }
+    public void setWidth(int w){
+        width= w;
+    }
+    public void setHeight(int h){
+        height= h;
+    }
+```
+
+### Collision detection
+Collision detection is what separates regular rectangles from hitboxes. We should be able to determine if to Hitboxes collide, so we can perform appropriate actions on them.
+
+Two rectangles are Colliding, if their sides are touching. Sides of every rectangle (with dimentions of cx,cy,w,h) are on lines with equations: *x*=cx, *x*=cx+w, *y*=cy, and *y*=cy+h. Suppose we have two rectangles `a(x1,y1,w1,h1)` and `b(x2,y2,w2,h2)`. Vertical sides of `a` **may** collide with horizontal sides of `b`, if closed intervals of `[x1, x1+w1]` and `[x2, x2+w2]` have intersection. In the same way, horizontal sides of `a` **may** collide with vertical sides of `b`, if closed intervals of `[y1, y1+h1]` and `[y2, y2+h2]` have intersection. if both of these two intersections exist, sides of rectangles are touching; Therefore, rectangles are colliding.
+
+**Note**: Two closed intervals of `[a, b]` and `[c, d]` have intersection, if and only if `a <= d` and `b >= c`.
+
+If you didn't understand all of above nonsense, don't worry. The code implementation is really simple.
+```java
+    // collision detection
+    boolean collidesWith(Hitbox h){
+        // x <= (h.x + h.width) && (x + width) >= h.x)    -> vertical intersection
+        // y <= (h.y + h.height) && (y + height) >= h.y   -> horizontal intersection
+        return (x <= (h.x + h.width) && (x + width) >= h.x) && (y <= (h.y + h.height) && (y + height) >= h.y);
+    }
+```
+
+Maybe not *that* simple... ([reference](https://www.jeffreythompson.org/collision-detection/rect-rect.php))
+
+### Drawing the hitboxes
+Hitboxes are not meant to be drawn. But sometimes for test and debug purposes, we will need to draw them. We'll add a `drawHitbox` method to `SimpleGameWindow` class to draw a rectangle.
+```java
+    // this method draws a hitbox
+    public void drawHitbox(Hitbox hb, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.drawRect(hb.getX(), hb.getY(), hb.getWidth(), hb.getHeight());
+                panel.repaint();
+            }
+        });
+    }
+```
+
+### Testing the hitboxes
+For the test example we are going to have two hitboxes, one fixed and the other one moving. When the hitboxes touch, the color of the moving one will change.
+```java
+import java.awt.Color;
+
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        // defining the hitboxes
+        Hitbox fixed= new Hitbox(320, 240, 160, 120);
+        Hitbox moving= new Hitbox(0, 200, 80, 80);
+
+        while(true){
+            // clear the frame
+            sgw.clear();
+            // draw the hitboxes based on collision
+            sgw.drawHitbox(fixed, new Color(255, 255, 0));
+            if(moving.collidesWith(fixed)) sgw.drawHitbox(moving, new Color(255, 0, 255));
+            else sgw.drawHitbox(moving, new Color(0, 255, 255));
+            // move the moving hitbox
+            moving.setX(moving.getX()+1);
+            // small delay
+            try{
+                Thread.sleep(30);
+            } catch(InterruptedException e){};
+        }
+    }
+}
+```
+
+![before collision](screenshots/screenshot8.png)
+![on collision](screenshots/screenshot9.png)
 
 
 
