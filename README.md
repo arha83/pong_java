@@ -430,7 +430,7 @@ The result:
 ![drawn image](screenshots/screenshot6.png)
 
 ## Game sprites
-In 2D games, evey animation or image you see is called a sprite. To have have a proper game, we need to design a basic `Sprite` class to use later in our game development.
+In 2D games, every animation or image you see is called a sprite. To have have a proper game, we need to design a basic `Sprite` class to use later in our game development.
 
 ### Sprite properties
 When designing a class, first we need to define its properties. Class properties are variables and object instances of that class. Now, let's think what a sprite class should have as its properties. Thinking of a sprite as an animation will make this job a little bit easier. Animations are basically an array of images that change over time. So, we have figured out that for our `Sprite` class we need an array of images and number of images to load for animation. When animations are drawn, we should know where to draw them so we will need two variables for x and y coordinates of the sprite. At last, we should know which frame of animation we should draw, so we will add an index variable to our list of class properties. With our class properties defined, we can now write a java class for it:
