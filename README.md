@@ -46,6 +46,13 @@ Extra features for extra points:
    - [Collision detection](#collision-detection)
    - [Drawing the hitboxes](#drawing-the-hitboxes)
    - [Testing the hitboxes](#testing-the-hitboxes)
+5. [Game objects](#game-objects)
+   - [Game object class](#game-object-class)
+   - [Drawing the game object](#drawing-the-game-object)
+   - [Applying velocity](#applying-velocity)
+   - [Applying acceleration](#applying-acceleration)
+   - [Managing animation of game objects](#managing-animation-of-game-objects)
+   - [Managing collision of game objects](#managing-collision-of-game-objects)
 
 ## Getting started
 ### Creating a simple window
@@ -690,6 +697,263 @@ public class Main{
 
 ![before collision](screenshots/screenshot8.png)
 ![on collision](screenshots/screenshot9.png)
+
+## Game objects
+Now that we have defined sprties and hitboxes, we can define game objects. Game objects combine sprites, hitboxes and physical properties.
+
+### Game object class
+A game object class should have a sprite and a hitbox. For now, let's say that its only physical property is its position that consists of an x and a y value. When we are talking about physics, integer values for x and y don't have enough accuracy, so we will define them as float. The constructor will set the sprite, hitbox and the initial value for x and y. While we are here, we will define the getter and setter function for x and y too. The setters for x and y are combined into one. Sprite and hitbox won't need a setter. When changing the position of an object, its sprite and hitbox should move along with it too. We change the position of sprite and hitbox in the setter of x and y.
+```java
+public class GameObject {
+    private Sprite sprite;
+    private Hitbox hitbox;
+    private float x; // x factor of the position
+    private float y; // y factor of the position
+    // constructor
+    public GameObject(Sprite spr, Hitbox hb, float x, float y){
+        sprite= spr;
+        hitbox= hb;
+        this.x= x;
+        this.y= y;
+    }
+    // getters and setters
+    public Sprite getSprite(){
+        return sprite;
+    }
+    public Hitbox getHitbox(){
+        return hitbox;
+    }
+    public float getX(){
+        return x;
+    }
+    public float getY(){
+        return y;
+    }
+    // this method should change position of object, sprite, and hitbox
+    public void setXY(float x, float y){
+        this.x= x;
+        this.y= y;
+        // position of sprite is integer; so we cast x and y to int
+        sprite.setX((int) x);
+        sprite.setY((int) y);
+        // position of hitbox is integer and it is on the top left corner of it; So we calculate its center and cast it to int
+        hitbox.setX((int) (x - hitbox.getWidth()/2));
+        hitbox.setY((int) (y - hitbox.getHeight()/2));
+    }
+}
+```
+
+### Drawing the game object
+Add a `drawGameObject` method to `SimpleGameWindow` class and take a `GameObject` instance as its parameter. It can also take a `drawHitbox` flag for drawing hitboxes.
+```java
+    // this method draws a game object
+    public void drawGameObject(GameObject go, boolean drawHitbox){
+        drawSprite(go.getSprite());
+        if(drawHitbox) this.drawHitbox(go.getHitbox(), new Color(255,0,0));
+    }
+```
+
+To test things, let's define a `GameObject` and draw it on the window.
+```java
+import java.awt.Color;
+
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        // sprite and hitbox
+        Sprite spr= new Sprite("./assets/animations/troll", 1, 400, 300);
+        Hitbox hb= new Hitbox(350, 250, 100, 100);
+        // game object
+        GameObject object= new GameObject(spr, hb, 400, 300);
+        // drawing
+        sgw.drawGameObject(object, true);
+    }
+}
+```
+![game object](screenshots/screenshot10.png)
+
+As you can see, in this case the hitbox is much smaller than the sprite.
+
+### Applying velocity
+Velocity is another physical property of an object. in 2D, velocty can be defined by its x and y factors; So, we will add `vx` and `vy` properties to our class. We should give their initial value in the constructor and write a getter and setter function for them.
+```java
+    private Sprite sprite;
+    private Hitbox hitbox;
+    private float x; // x factor of the position
+    private float y; // y factor of the position
+    private float vx; // x factor of the velocity
+    private float vy; // y factor of the velocity
+    // constructor
+    public GameObject(Sprite spr, Hitbox hb, float x, float y, float vx, float vy){
+        sprite= spr;
+        hitbox= hb;
+        this.x= x;
+        this.y= y;
+        this.vx= vx;
+        this.vy= vy;
+    }
+```
+```java
+    public float getVX(){
+        return vx;
+    }
+    public float getVY(){
+        return vy;
+    }
+```
+```java
+    public void setVelocity(float vx, float vy){
+        this.vx= vx;
+        this.vy= vy;
+    }
+```
+
+We have added velocity property and its related changes; But it still doesn't affect the position of the object. Velocity is the change of position over time. So if we add velocity (`v`) to our position (`x0`) periodicly (`t`) the object will move with a constant speed over time (`x= v.t + x0`). Mathematically, we have discretely integrated velocity over time 🤓.
+To do that, we'll add a `update` method to apply the velocity to position any time the method is run. By using this method in a loop, the object will move with a constant speed.
+```java
+    // update the position
+    public void update(){
+        setXY(x+vx, y+vy);
+    }
+```
+
+Let's test the velocity with the object we just defined.
+```java
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        // sprite and hitbox
+        Sprite spr= new Sprite("./assets/animations/troll", 1, 400, 300);
+        Hitbox hb= new Hitbox(350, 250, 100, 100);
+        // game object with initial velocity of (4, 3)
+        GameObject object= new GameObject(spr, hb, 400, 300, 4, 3);
+        object.setXY(0, 0);
+        // updating the object position in a loop and drawing it
+        while(true){
+            // draw
+            sgw.clear();
+            sgw.drawGameObject(object, true);
+            // update
+            object.update();
+            // small delay
+            try{
+                Thread.sleep(10);
+            } catch(InterruptedException e){}
+        }
+    }
+}
+```
+![moving](screenshots/screenshot11.gif)
+
+### Applying acceleration
+Velocity is not really fun by itself. Acceleration will make things more fun. just like velocity, we should add acceleration's x and y factor to our class and modify consructor and add getters and setters.
+```java
+    private Sprite sprite;
+    private Hitbox hitbox;
+    private float x; // x factor of the position
+    private float y; // y factor of the position
+    private float vx; // x factor of the velocity
+    private float vy; // y factor of the velocity
+    private float ax; // x factor of acceleration
+    private float ay; // y factor of acceleration
+    // constructor
+    public GameObject(Sprite spr, Hitbox hb, float x, float y, float vx, float vy, float ax, float ay){
+        sprite= spr;
+        hitbox= hb;
+        this.x= x;
+        this.y= y;
+        this.vx= vx;
+        this.vy= vy;
+        this.ax= ax;
+        this.ay= ay;
+    }
+```
+```java
+    public float getAX(){
+        return ax;
+    }
+    public float getAY(){
+        return ay;
+    }
+```
+```java
+    public void setAcceleration(float ax, float ay){
+        this.ax= ax;
+        this.ay= ay;
+    }
+```
+
+The accelration usually changes based on forces applied on the object. We can add a method to apply additional force (acceleration) to our object as an easier way to change acceleration.
+```java
+    // this method applies additional acceleration to object
+    public void applyForce(float fx, float fy){
+        ax += fx;
+        ay += fy;
+    }
+```
+
+The acceleration is rate of change of speed. But at the moment it is not affecting the speed of object. We need to modify `update` method to change the velocity just like what we did to position.
+```java
+    // update the position
+    public void update(){
+        setXY(x+vx, y+vy);
+        vx += ax;
+        vy += ay;
+    }
+```
+Let's test apply gravity to our example object and throw it to the other side of the screen (negative vy, postive vx and ay, ay=0)  and see what happens.
+```java
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        // sprite and hitbox
+        Sprite spr= new Sprite("./assets/animations/troll", 1, 400, 300);
+        Hitbox hb= new Hitbox(350, 250, 100, 100);
+        // game object with initial velocity of (4, 3)
+        GameObject object= new GameObject(spr, hb, 400, 300, 4, -10, 0, 0.1f);
+        object.setXY(0, 600);
+        // updating the object position in a loop and drawing it
+        while(true){
+            // draw
+            sgw.clear();
+            sgw.drawGameObject(object, true);
+            // update
+            object.update();
+            // small delay
+            try{
+                Thread.sleep(10);
+            } catch(InterruptedException e){}
+        }
+    }
+}
+```
+![acceleration](screenshots/screenshot12.gif)
+
+### Managing animation of game objects
+Animations are sprites' responsibility. The sprite in `GameObject` class is private and getting and setting it is a kinda slow. We can add two shortcut methods for `sprite`'s `next` and `setIndex` methods.
+```java
+    // shortcut methods for sprite
+    public void setIndex(int index){
+        sprite.setIndex(index);
+    }
+    public void next(){
+        sprite.next();
+    }
+```
+
+### Managing collision of game objects
+Like sprite animations, we can add a shortcut for `collidesWith` method of `hitbox` in our game object class to detect collision between game objects
+```java
+    // shortcut collision of hitboxes
+    public boolean collidesWith(GameObject gameObject){
+        return hitbox.collidesWith(gameObject.hitbox);
+    }
+```
+
+
+
+
+
 
 
 
