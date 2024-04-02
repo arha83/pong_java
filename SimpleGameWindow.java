@@ -181,6 +181,18 @@ public class SimpleGameWindow {
             }
         });
     }
+    // this method draws a hitbox
+    public void drawHitbox(Hitbox hb, Color color){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Graphics2D g2d = (Graphics2D) image.getGraphics();
+                g2d.setColor(color);
+                g2d.drawRect(hb.getX(), hb.getY(), hb.getWidth(), hb.getHeight());
+                panel.repaint();
+            }
+        });
+    }
     // this method clears the frame
     public void clear() {
         SwingUtilities.invokeLater(new Runnable() {
