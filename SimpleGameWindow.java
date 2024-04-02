@@ -193,6 +193,11 @@ public class SimpleGameWindow {
             }
         });
     }
+    // this method draws a game object
+    public void drawGameObject(GameObject go, boolean drawHitbox){
+        drawSprite(go.getSprite());
+        if(drawHitbox) this.drawHitbox(go.getHitbox(), new Color(255,0,0));
+    }
     // this method clears the frame
     public void clear() {
         SwingUtilities.invokeLater(new Runnable() {
