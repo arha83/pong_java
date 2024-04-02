@@ -5,8 +5,8 @@ public class Main{
         Sprite spr= new Sprite("./assets/animations/troll", 1, 400, 300);
         Hitbox hb= new Hitbox(350, 250, 100, 100);
         // game object with initial velocity of (4, 3)
-        GameObject object= new GameObject(spr, hb, 400, 300, 4, 3);
-        object.setXY(0, 0);
+        GameObject object= new GameObject(spr, hb, 400, 300, 4, -10, 0, 0.1f);
+        object.setXY(0, 600);
         // updating the object position in a loop and drawing it
         while(true){
             // draw

@@ -5,14 +5,18 @@ public class GameObject {
     private float y; // y factor of the position
     private float vx; // x factor of the velocity
     private float vy; // y factor of the velocity
+    private float ax; // x factor of acceleration
+    private float ay; // y factor of acceleration
     // constructor
-    public GameObject(Sprite spr, Hitbox hb, float x, float y, float vx, float vy){
+    public GameObject(Sprite spr, Hitbox hb, float x, float y, float vx, float vy, float ax, float ay){
         sprite= spr;
         hitbox= hb;
         this.x= x;
         this.y= y;
         this.vx= vx;
         this.vy= vy;
+        this.ax= ax;
+        this.ay= ay;
     }
     // getters and setters
     public Sprite getSprite(){
@@ -33,6 +37,12 @@ public class GameObject {
     public float getVY(){
         return vy;
     }
+    public float getAX(){
+        return ax;
+    }
+    public float getAY(){
+        return ay;
+    }
     // this method should change position of object, sprite, and hitbox
     public void setXY(float x, float y){
         this.x= x;
@@ -48,8 +58,19 @@ public class GameObject {
         this.vx= vx;
         this.vy= vy;
     }
+    public void setAcceleration(float ax, float ay){
+        this.ax= ax;
+        this.ay= ay;
+    }
     // update the position
     public void update(){
         setXY(x+vx, y+vy);
+        vx += ax;
+        vy += ay;
+    }
+    // this method applies additional acceleration to object
+    public void applyForce(float fx, float fy){
+        ax += fx;
+        ay += fy;
     }
 }
