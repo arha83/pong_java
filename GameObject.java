@@ -73,4 +73,15 @@ public class GameObject {
         ax += fx;
         ay += fy;
     }
+    // shortcut methods for sprite
+    public void setIndex(int index){
+        sprite.setIndex(index);
+    }
+    public void next(){
+        sprite.next();
+    }
+    // shortcut collision of hitboxes
+    public boolean collidesWith(GameObject gameObject){
+        return hitbox.collidesWith(gameObject.hitbox);
+    }
 }
