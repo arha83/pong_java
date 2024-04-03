@@ -53,6 +53,10 @@ Extra features for extra points:
    - [Applying acceleration](#applying-acceleration)
    - [Managing animation of game objects](#managing-animation-of-game-objects)
    - [Managing collision of game objects](#managing-collision-of-game-objects)
+6. [Playing sounds](#playing-sounds)
+   - [Acquired packages](#acquired-packages)
+   - [Audio player class](#audio-player-class)
+   - [Playing audio](#playing-audio)
 
 ## Getting started
 ### Creating a simple window
@@ -775,7 +779,7 @@ public class Main{
 As you can see, in this case the hitbox is much smaller than the sprite.
 
 ### Applying velocity
-Velocity is another physical property of an object. in 2D, velocty can be defined by its x and y factors; So, we will add `vx` and `vy` properties to our class. We should give their initial value in the constructor and write a getter and setter function for them.
+Velocity is another physical property of an object. in 2D, velocity can be defined by its x and y factors; So, we will add `vx` and `vy` properties to our class. We should give their initial value in the constructor and write a getter and setter function for them.
 ```java
     private Sprite sprite;
     private Hitbox hitbox;
@@ -949,6 +953,102 @@ Like sprite animations, we can add a shortcut for `collidesWith` method of `hitb
         return hitbox.collidesWith(gameObject.hitbox);
     }
 ```
+
+## Playing sounds
+No one likes a mute game. In this section, we are going to do our game a favor and add sound effects to it. For that, we should make a new class. Let's call this class `AudioPlayer`.
+
+### Acquired packages
+There are 3 packages we are going to need when designing the audio player class: `AudioSystem`, `AudioInputStream`, and `Clip`.
+```java
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+```
+
+`AudioSystem` class is what let's us use a sound file and play a sound. It can return an `AudioInputStream` and a `Clip` instance. `AudioInputStream` class processes and prepares audio data for playing. An instance of `Clip` class manages the system resources to play an audio using an `AudioInputStream` parameter.
+### Audio player class
+Let's write the class using those packages.
+```java
+// importing packages
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.LineUnavailableException;
+
+public class AudioPlayer {
+    // class properties
+    private AudioInputStream audioInputStream= null;
+    private Clip clip= null;
+    private String path;
+    // constructor only sets the file path
+    public AudioPlayer(String path){
+        this.path= path;
+    }
+    // this method initializes the audioInput stream and clip properties
+    // return true if operation was successful
+    public boolean initAudioStream(){
+        // release clip resources
+        if(clip != null){
+            clip.stop();
+            clip.close();
+            clip= null;
+        }
+        try{
+            audioInputStream= AudioSystem.getAudioInputStream(new File(path));
+            clip= AudioSystem.getClip();
+            clip.open(audioInputStream);
+        } catch(IOException e){
+            return false;
+        } catch(UnsupportedAudioFileException e){
+            return false;
+        } catch(LineUnavailableException e){
+            return false;
+        }
+        return true;
+    }
+```
+The method `initAudioStream` is defined beacause it will be used in different places of the class. It will stop, close and set `clip` to `null` if it is not already `null`; Then it tries to initialize the `audioInputStream` and returns `true` if successful.
+
+### Playing audio
+The most basic operation is to play and pause the audio.
+```java
+    // this method plays the audio
+    public void play(){
+        clip.start();
+    }
+    // this method pauses the audio
+    public void pause(){
+        clip.stop();
+    }
+```
+
+Other two important operations are playing audio on loop and restarting the audio.
+```java
+    // this method plays audio on loop
+    public void loop(){
+        clip.loop(-1);
+    }
+    // this method restarts the audio
+    public void restart(){
+        clip.setMicrosecondPosition(0);
+    }
+```
+
+Following example plays a demo audio on loop.
+```java
+public class Main{
+    public static void main(String args[]){
+        AudioPlayer ap1= new AudioPlayer("./assets/sfx/demo.wav");
+        ap1.initAudioStream();
+        ap1.loop();
+    }
+}
+```
+
 
 
 
