@@ -14,7 +14,8 @@ Features that the game must have (based on TA's sayings):
 Extra features for extra points:
 - AI opponent
 - Difficulty levels
-- Multiplayer Network Support *(I'm not gonna do this LOL)*
+- Sound effects
+- Multiplayer network support *(I'm not gonna do this LOL)*
 - Animations
 - Version control *(That's why you are here)*
 - Code comments
