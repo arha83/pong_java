@@ -14,7 +14,8 @@ Features that the game must have (based on TA's sayings):
 Extra features for extra points:
 - AI opponent
 - Difficulty levels
-- Multiplayer Network Support *(I'm not gonna do this LOL)*
+- Sound effects
+- Multiplayer network support *(I'm not gonna do this LOL)*
 - Animations
 - Version control *(That's why you are here)*
 - Code comments
@@ -53,6 +54,10 @@ Extra features for extra points:
    - [Applying acceleration](#applying-acceleration)
    - [Managing animation of game objects](#managing-animation-of-game-objects)
    - [Managing collision of game objects](#managing-collision-of-game-objects)
+6. [Playing sounds](#playing-sounds)
+   - [Acquired packages](#acquired-packages)
+   - [Audio player class](#audio-player-class)
+   - [Playing audio](#playing-audio)
 
 ## Getting started
 ### Creating a simple window
@@ -775,7 +780,7 @@ public class Main{
 As you can see, in this case the hitbox is much smaller than the sprite.
 
 ### Applying velocity
-Velocity is another physical property of an object. in 2D, velocty can be defined by its x and y factors; So, we will add `vx` and `vy` properties to our class. We should give their initial value in the constructor and write a getter and setter function for them.
+Velocity is another physical property of an object. in 2D, velocity can be defined by its x and y factors; So, we will add `vx` and `vy` properties to our class. We should give their initial value in the constructor and write a getter and setter function for them.
 ```java
     private Sprite sprite;
     private Hitbox hitbox;
@@ -950,8 +955,157 @@ Like sprite animations, we can add a shortcut for `collidesWith` method of `hitb
     }
 ```
 
+## Playing sounds
+No one likes a mute game. In this section, we are going to do our game a favor and add sound effects to it. For that, we should make a new class. Let's call this class `AudioPlayer`.
 
+### Acquired packages
+There are 3 packages we are going to need when designing the audio player class: `AudioSystem`, `AudioInputStream`, and `Clip`.
+```java
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+```
 
+`AudioSystem` class is what let's us use a sound file and play a sound. It can return an `AudioInputStream` and a `Clip` instance. `AudioInputStream` class processes and prepares audio data for playing. An instance of `Clip` class manages the system resources to play an audio using an `AudioInputStream` parameter.
+### Audio player class
+Let's write the class using those packages.
+```java
+// importing packages
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.LineUnavailableException;
+
+public class AudioPlayer {
+    // class properties
+    private AudioInputStream audioInputStream= null;
+    private Clip clip= null;
+    private String path;
+    // constructor only sets the file path
+    public AudioPlayer(String path){
+        this.path= path;
+    }
+    // this method initializes the audioInput stream and clip properties
+    // return true if operation was successful
+    public boolean initAudioStream(){
+        // release clip resources
+        if(clip != null){
+            clip.stop();
+            clip.close();
+            clip= null;
+        }
+        try{
+            audioInputStream= AudioSystem.getAudioInputStream(new File(path));
+            clip= AudioSystem.getClip();
+            clip.open(audioInputStream);
+        } catch(IOException e){
+            return false;
+        } catch(UnsupportedAudioFileException e){
+            return false;
+        } catch(LineUnavailableException e){
+            return false;
+        }
+        return true;
+    }
+```
+The method `initAudioStream` is defined beacause it will be used in different places of the class. It will stop, close and set `clip` to `null` if it is not already `null`; Then it tries to initialize the `audioInputStream` and returns `true` if successful.
+
+### Playing audio
+The most basic operation is to play and pause the audio.
+```java
+    // this method plays the audio
+    public void play(){
+        clip.start();
+    }
+    // this method pauses the audio
+    public void pause(){
+        clip.stop();
+    }
+```
+
+Other two important operations are playing audio on loop and restarting the audio.
+```java
+    // this method plays audio on loop
+    public void loop(){
+        clip.loop(-1);
+    }
+    // this method restarts the audio
+    public void restart(){
+        clip.setMicrosecondPosition(0);
+    }
+```
+
+Following example plays a demo audio on loop.
+```java
+public class Main{
+    public static void main(String args[]){
+        AudioPlayer ap1= new AudioPlayer("./assets/sfx/demo.wav");
+        ap1.initAudioStream();
+        ap1.loop();
+    }
+}
+```
+
+## Game scenes:
+Now we have some cool game objects that can move; But we haven't defined ways for them to interact with each other and if we drop multiple game objects in our game, They will cross each other like ghosts 👻. To support object interaction and ultimately designing game machanics, we are going to create a scene class to manage interaction of multiple game objects of our game.
+
+### Game scene class
+Once again, let's make create a new class. First, a game scene has and handles multiple `GameObject` instances. To store these game objects, we can use either arrays or lists. Arrays must have constant length which means that you can't add or remove a game object once you have defined the array. In the other hand, lists are more flexible in terms of size. in java, lists are known as `ArrayList` objects. Let's make our `Scene` class and define a list of game objects in it.
+```java
+import java.util.ArrayList;
+// class definition
+public class GameScene {
+    // list of game object
+    ArrayList<GameObject> objects;
+    // simple constructor
+    public GameScene(){
+        objects= new ArrayList<GameObject>();
+    }
+}
+```
+
+### game object to the list
+Now we have defined and initialized a list of game object, but it is empty. We need a method to add more game objects to the list.
+```java
+    // this method add an instance of GameObject class to is list.
+    public void addObject(GameObject go){
+        objects.add(go);
+    }
+```
+
+### Scene update method
+Our scene needs to update the animations and physics of objects based on game mechanics. So it needs an `update` method to do that for us. The problem is that the update method of each scene is different from the other scene. This make different `update` methods for different instances of the `GameScene` class, we can define an empty `update` method in the class and override it where ever we are making a new instance of the class.
+```java
+    // this method should be overridden
+    public void update(){}
+```
+
+Here's how you can override a method when making a new instance of a class.
+```java
+GameScene gs= new GameScene(){
+   @Override
+   public void update(){
+       System.out.println("Hi!");
+   }
+};
+```
+Here, the update method is changed to print `"Hi!"` instead of being as useless as the G in lasagna.
+
+### Drwaing the scene
+Let's add a another method to `SimpleGameWndow` class to draw a `GameScene`. In this method we should draw every game object of the `objects` list using a loop.
+```java
+    // this method draws every object of a game scene
+    public void drawGameScene(GameScene gs, boolean drawHitboxes){
+        for(GameObject go : gs.objects){
+            drawGameObject(go, drawHitboxes);
+        }
+    }
+```
+This less known form of `for` loop is more efficient *(and fancier)* when iterating lists. `drawHitboxes` parameter is just for debugging purposes.
 
 
 
