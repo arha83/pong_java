@@ -58,6 +58,12 @@ Extra features for extra points:
    - [Acquired packages](#acquired-packages)
    - [Audio player class](#audio-player-class)
    - [Playing audio](#playing-audio)
+7. [Game scenes](#game-scenes)
+   - [Game scene class](#game-scene-class)
+   - [Adding game object to the list](#adding-game-object-to-the-list)
+   - [Scene update method](#scene-update-method)
+   - [Inheritance](#inheritance)
+   - [Inheriting game scene class](#inheriting-game-scene-class)
 
 ## Getting started
 ### Creating a simple window
@@ -1050,7 +1056,7 @@ public class Main{
 }
 ```
 
-## Game scenes:
+## Game scenes
 Now we have some cool game objects that can move; But we haven't defined ways for them to interact with each other and if we drop multiple game objects in our game, They will cross each other like ghosts 👻. To support object interaction and ultimately designing game machanics, we are going to create a scene class to manage interaction of multiple game objects of our game.
 
 ### Game scene class
@@ -1068,7 +1074,7 @@ public class GameScene {
 }
 ```
 
-### game object to the list
+### Adding game object to the list
 Now we have defined and initialized a list of game object, but it is empty. We need a method to add more game objects to the list.
 ```java
     // this method add an instance of GameObject class to is list.
@@ -1078,34 +1084,57 @@ Now we have defined and initialized a list of game object, but it is empty. We n
 ```
 
 ### Scene update method
-Our scene needs to update the animations and physics of objects based on game mechanics. So it needs an `update` method to do that for us. The problem is that the update method of each scene is different from the other scene. This make different `update` methods for different instances of the `GameScene` class, we can define an empty `update` method in the class and override it where ever we are making a new instance of the class.
+Our scene needs to update the animations and physics of objects based on game mechanics. So it needs an `update` method to do that for us. The problem is that the update method of each scene is different from the other scene. To make different `update` methods for different instances of the `GameScene` class, we can define an empty `update` method in the class and inherit the `GameScene` class for every scene we are going to have.
 ```java
     // this method should be overridden
     public void update(){}
 ```
 
-Here's how you can override a method when making a new instance of a class.
-```java
-GameScene gs= new GameScene(){
-   @Override
-   public void update(){
-       System.out.println("Hi!");
-   }
-};
-```
-Here, the update method is changed to print `"Hi!"` instead of being as useless as the G in lasagna.
+### Inheritance
+But what is inheritance? When you define a class, say class `a`, with properties and methods of another class, like class `b`, and add some more features to it, we have inherited class `a` from class `b`. Here, class `a` is called child class and class `b` is called parent class. A parent class can have multiple children. You can make different versions of a parent class via inheriting them.
 
-### Drwaing the scene
-Let's add a another method to `SimpleGameWndow` class to draw a `GameScene`. In this method we should draw every game object of the `objects` list using a loop.
+![inheritance](images/inheritance.png)
+
+In java, we inherit a class using `extends` keyword.
 ```java
-    // this method draws every object of a game scene
-    public void drawGameScene(GameScene gs, boolean drawHitboxes){
-        for(GameObject go : gs.objects){
-            drawGameObject(go, drawHitboxes);
-        }
-    }
+class Child extends Parent{
+   
+}
 ```
-This less known form of `for` loop is more efficient *(and fancier)* when iterating lists. `drawHitboxes` parameter is just for debugging purposes.
+
+When we change a method of parent class in child class to make different functionality, it is called overriding the method. In java, When we override a method in a child class, we must indicate overriding it to compiler using `@Override`.
+```java
+class Child extends Parent{
+   @Override
+   void ParentMethod(){
+
+   }
+}
+```
+
+### Inheriting game scene class
+Every scene of our game has every property of the `GameScene` class, but its update method is different. So for each scene of our game, we should define a class that inherits from `GameScene` and overrides the `update` method.
+```java
+// class definition and inheritance
+public class DemoScene extends GameScene {
+    // constructor method
+    DemoScene(){
+        // running constructor of the parent class
+        super();
+    }
+    // overriding the update method of te parent
+    @Override
+    public void update(){
+        System.out.println("Hi! :)");
+    }
+}
+```
+
+`super` refers to the parent class; Therefore, `super()` is the constructor of the parent class. In the constructor of `DemoScene` class, `super()` is run to do initializations in the parent class. The overriden `update` method now prints a `"Hi! :)"` and isn't as useless as the G in lasagna like before.
+
+
+
+
 
 
 
