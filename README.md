@@ -1050,9 +1050,62 @@ public class Main{
 }
 ```
 
+## Game scenes:
+Now we have some cool game objects that can move; But we haven't defined ways for them to interact with each other and if we drop multiple game objects in our game, They will cross each other like ghosts 👻. To support object interaction and ultimately designing game machanics, we are going to create a scene class to manage interaction of multiple game objects of our game.
 
+### Game scene class
+Once again, let's make create a new class. First, a game scene has and handles multiple `GameObject` instances. To store these game objects, we can use either arrays or lists. Arrays must have constant length which means that you can't add or remove a game object once you have defined the array. In the other hand, lists are more flexible in terms of size. in java, lists are known as `ArrayList` objects. Let's make our `Scene` class and define a list of game objects in it.
+```java
+import java.util.ArrayList;
+// class definition
+public class GameScene {
+    // list of game object
+    ArrayList<GameObject> objects;
+    // simple constructor
+    public GameScene(){
+        objects= new ArrayList<GameObject>();
+    }
+}
+```
 
+### game object to the list
+Now we have defined and initialized a list of game object, but it is empty. We need a method to add more game objects to the list.
+```java
+    // this method add an instance of GameObject class to is list.
+    public void addObject(GameObject go){
+        objects.add(go);
+    }
+```
 
+### Scene update method
+Our scene needs to update the animations and physics of objects based on game mechanics. So it needs an `update` method to do that for us. The problem is that the update method of each scene is different from the other scene. This make different `update` methods for different instances of the `GameScene` class, we can define an empty `update` method in the class and override it where ever we are making a new instance of the class.
+```java
+    // this method should be overridden
+    public void update(){}
+```
+
+Here's how you can override a method when making a new instance of a class.
+```java
+GameScene gs= new GameScene(){
+   @Override
+   public void update(){
+       System.out.println("Hi!");
+   }
+};
+```
+Here, the update method is changed to print `"Hi!"` instead of being as useless as the G in lasagna.
+
+### Drwaing the scene
+Let's add a another method to `SimpleGameWndow` class to draw a `GameScene`. In this method we should draw every game object of the `objects` list using a loop.
+```java
+    // this method draws every object of a game scene
+    public void drawGameScene(GameScene gs, boolean drawHitboxes){
+        for(GameObject go : gs.objects){
+            drawGameObject(go, drawHitboxes);
+        }
+    }
+```
+This less known form of `for` loop is more efficient *(and fancier)* when iterating lists. `drawHitboxes` parameter is just for debugging purposes.
 
 
 
