@@ -44,7 +44,7 @@ public class SimpleGameWindow {
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(image, 0, 0, null); //TODO: Attend null observer later
+                g.drawImage(image, 0, 0, null);
             }
         };
         frame.setSize(width, height);
