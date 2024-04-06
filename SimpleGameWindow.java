@@ -198,6 +198,12 @@ public class SimpleGameWindow {
         drawSprite(go.getSprite());
         if(drawHitbox) this.drawHitbox(go.getHitbox(), new Color(255,0,0));
     }
+    // this method draws every object of a game scene
+    public void drawGameScene(GameScene gs, boolean drawHitboxes){
+        for(GameObject go : gs.objects){
+            drawGameObject(go, drawHitboxes);
+        }
+    }
     // this method clears the frame
     public void clear() {
         SwingUtilities.invokeLater(new Runnable() {
