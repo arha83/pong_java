@@ -1,3 +1,5 @@
+package myGame;
+
 import java.util.ArrayList;
 // class definition
 public class GameScene {

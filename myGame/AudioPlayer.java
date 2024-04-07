@@ -1,3 +1,5 @@
+package myGame;
+
 // importing packages
 import java.io.File;
 import java.io.IOException;

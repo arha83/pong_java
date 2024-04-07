@@ -1,3 +1,5 @@
+package myGame;
+
 // importing packages (aka libraries)
 import java.awt.BorderLayout;
 import java.awt.Color;

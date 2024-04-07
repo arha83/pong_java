@@ -1,3 +1,5 @@
+package myGame;
+
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;

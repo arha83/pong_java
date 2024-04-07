@@ -1,3 +1,5 @@
+package myGame;
+
 public class Hitbox {
     private int x; // top left corner x
     private int y; // top left corner y

@@ -1,3 +1,5 @@
+package myGame;
+
 public class GameObject {
     private Sprite sprite;
     private Hitbox hitbox;
