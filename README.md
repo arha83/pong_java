@@ -60,10 +60,15 @@ Extra features for extra points:
    - [Playing audio](#playing-audio)
 7. [Game scenes](#game-scenes)
    - [Game scene class](#game-scene-class)
-   - [Adding game object to the list](#adding-game-object-to-the-list)
+   - [Adding game objects to the list](#adding-game-objects-to-the-list)
    - [Scene update method](#scene-update-method)
    - [Inheritance](#inheritance)
    - [Inheriting game scene class](#inheriting-game-scene-class)
+   - [Packages](#packages)
+   - [Moving classes to packages](#moving-classes-to-packages)
+   - [Drawing a game scene](#drawing-a-game-scene)
+   - [Using a scene](#using-a-scene)
+8. [Game engine!](#game-engine)
 
 ## Getting started
 ### Creating a simple window
@@ -1074,7 +1079,7 @@ public class GameScene {
 }
 ```
 
-### Adding game object to the list
+### Adding game objects to the list
 Now we have defined and initialized a list of game object, but it is empty. We need a method to add more game objects to the list.
 ```java
     // this method add an instance of GameObject class to is list.
@@ -1132,6 +1137,147 @@ public class DemoScene extends GameScene {
 
 `super` refers to the parent class; Therefore, `super()` is the constructor of the parent class. In the constructor of `DemoScene` class, `super()` is run to do initializations in the parent class. The overriden `update` method now prints a `"Hi! :)"` and isn't as useless as the G in lasagna like before.
 
+### Packages
+Our root directory is starting to get busy as we are adding more and more classes to it. To move classes into different folders, we should know about java's packaging system. The key is the `package` keyword which should be used before imports in the java file. With this keyword, you tell the compiler what package is this class in. The packages are simply fancy names for directories; So when we use `package` keyword, we are telling java which folder of the project our java file is located in. Note that the direcory name must be exactly the same as the package name.
+```java
+package PackageName;
+```
+
+This code indicates that the java file is in a directory named `packageName`. To make sub packages for a package we should add sub directories and use `.` in package name declaration of the files that belong to that sub package.
+```java
+package PackageName.SubPackageName;
+```
+
+The directory structure of two above package declarations should be something like this:
+
+* root directory of the project
+  * Main.java
+  * PackageName
+    * firstCode.java
+    * SubPackageName
+      * secondCode.java
+
+To use the packages in our files we should use the good old `import` keyword.
+```java
+import PackageName.SubPackageName.secondcode;
+```
+
+### Moving classes to packages
+Now that we have learned how to handle packages, we are safe to move our classes to a separate folder. Let's call this folder `myGame` for now. This folder will contain:
+* SimpleGameWindow.java
+* Sprite.java
+* Hitbox.java
+* GameObject.java
+* AudioPlayer.java
+* GameScene.java
+
+After moving the files to this new folder, we should declare the folder as a package by declaring package name in each of these files.
+```java
+package myGame;
+```
+
+With the `myGame` package declared, we can use the classes like before after importing them; For example:
+ ```java
+import mygGame.SimpleGameWindow;
+```
+
+We have grouped our base files in a package; But the `DemoScene.java` and the future children of the `GameScene` still have no folder to be in. We can make a `scenes` folder to store our custom game scenes in it. In some games, this folder is named `levels` which makes sense knowing that every level of a game is basically a scene. Next example shows how the packages are used.
+```java
+import myGame.SimpleGameWindow;
+import scenes.DemoScene;
+
+public class Main{
+    public static void main(String args[]){
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+
+        DemoScene ds= new DemoScene();
+        ds.update();
+    }
+}
+```
+
+### Drawing a game scene
+To draw a game scene, we just need to add a method to `SimpleGameWindow` class that draws each object of that game scene.
+```java
+    // this method draws every object of a game scene
+    public void drawGameScene(GameScene gs, boolean drawHitboxes){
+        for(GameObject go : gs.objects){
+            drawGameObject(go, drawHitboxes);
+        }
+    }
+```
+This less known form of `for` loop works more efficient with array lists. The important point is that game objects are drawn in the same order as they are added to the list. So, we should pay attention to the order of objects we are adding to the list.
+
+### Using a scene
+Let's make a ball that moves in the window and bounces when it touches the window edges.
+```java
+package scenes;
+
+import java.util.Random;
+import myGame.*;
+// class definition and inheritance
+public class DemoScene extends GameScene {
+    // declaring scene objects
+    public GameObject ball;
+    // constructor method
+    public DemoScene(){
+        // running constructor of the parent class
+        super();
+        // initializing scene object (only a ball)
+        Sprite ballSprite= new Sprite("./assets/animations/glowing ball", 22, 0, 0);
+        Hitbox ballHitbox= new Hitbox(-40, -40, 80, 80);
+        ball= new GameObject(ballSprite, ballHitbox, 0, 0, 0, 0, 0, 0);
+        // setting ball position to center and setting a random velocity to it
+        ball.setXY(400, 300);
+        ball.setVelocity(new Random().nextFloat() * 10 - 5, new Random().nextFloat() * 10 - 5);
+        // adding ball to objects list so it will be drawn in the window
+        addObject(ball);
+    }
+    // overriding the update method of te parent
+    @Override
+    public void update(){
+        // game mechanics here
+        // bounce ball if it hits the edges
+        if(ball.getX() <= 40 || ball.getX() >= 800-40) ball.setVelocity(-ball.getVX(), ball.getVY());
+        if(ball.getY() <= 40 || ball.getY() >= 600-40) ball.setVelocity(ball.getVX(), -ball.getVY());
+        // draw the ball
+        ball.update();
+        ball.next();
+    }
+}
+```
+
+Initial speed a set to a random x and y between -5 and 5. when the ball borders reach the edges, one of velocity factors is inverted to make a bouncing effect.
+```java
+import myGame.SimpleGameWindow;
+import scenes.DemoScene;
+
+public class Main{
+    public static void main(String args[]){
+        // game window and game scene
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        DemoScene ds= new DemoScene();
+        // game loop
+        while(true){
+            // clearing and drawing
+            sgw.clear();
+            sgw.drawGameScene(ds, true);
+            // updating physics
+            ds.update();
+            // delay
+            try{
+                Thread.sleep(50);
+            } catch(InterruptedException e){}
+        }
+    }
+}
+```
+![bouncing ball](screenshots/screenshot13.gif)
+
+## Game engine!
+*This whole time, we have been secretly making a basic game engine. At this point, I think it has got the minimum requirements to be a game engine. I'm gonna name it* ***"Chai"***.
+
+![chai engine](images/chai_small.png)
 
 
 
