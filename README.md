@@ -2,23 +2,23 @@
 This is an assignment project for my advanced programming class. The goal is to make a pong game using `SimpleGameWindow.class` file provided by TA.
 
 Features that the game must have (based on TA's sayings):
-- Graphical User Interface
-- Gameplay mechanics *(Is there a game without gameplay mechanics???)*
-- Player controls *(Pong is not a zero-player game; Ofcourse it has player input 😑)*
-- Collision detection
-- Score tracking
-- Game over conditions
-- Customization
-- Power-ups
+- [ ] Graphical User Interface
+- [ ] Gameplay mechanics *(Is there a game without gameplay mechanics???)*
+- [ ] Player controls *(Pong is not a zero-player game; Ofcourse it has player input 😑)*
+- [X] Collision detection
+- [ ] Score tracking
+- [ ] Game over conditions
+- [ ] Customization
+- [ ] Power-ups
 
 Extra features for extra points:
-- AI opponent
-- Difficulty levels
-- Sound effects
-- Multiplayer network support *(I'm not gonna do this LOL)*
-- Animations
-- Version control *(That's why you are here)*
-- Code comments
+- [ ] AI opponent
+- [ ] Difficulty levels
+- [X] Sound effects
+- [X] Multiplayer network support *(I'm not gonna do this LOL)*
+- [X] Animations
+- [X] Version control *(That's why you are here)*
+- [X] Code comments
 
 ## Table of contents
 0. [Table of contents](#table-of-contents) (Recursion haha 😉)
