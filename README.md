@@ -69,6 +69,8 @@ Extra features for extra points:
    - [Drawing a game scene](#drawing-a-game-scene)
    - [Using a scene](#using-a-scene)
 8. [Game engine!](#game-engine)
+9. [Classic pong](#classic-pong)
+    - [
 
 ## Getting started
 ### Creating a simple window
@@ -1279,7 +1281,149 @@ public class Main{
 
 ![chai engine](images/chai_small.png)
 
+## Classic pong
+To warm up, we are going to make the classic pong game.
 
+### Classic pong scene
+*I'm starting to get tired of explaining self-explanatory codes. Figure them out yourself! 🙂*️
+```java
+package scenes;
+
+import myGame.*;
+// class declaration
+public class ClassicPong extends GameScene{
+    // game scene data
+    private int sceneOriginX, sceneOriginY;
+    private int sceneWidth, sceneHeight;
+    // game objects
+    GameObject leftPaddle;
+    GameObject rightPaddle;
+    GameObject ball;
+}
+```
+
+### Classic pong constructor
+``` java
+    // constructor
+    public ClassicPong(int x, int y, int w, int h){
+        super();
+        sceneOriginX= x;
+        sceneOriginY= y;
+        sceneWidth= w;
+        sceneHeight= h;
+        // sprites
+        Sprite leftPaddleSprite= new Sprite("./assets/animations/pong paddle", 9, 0, 0);
+        Sprite rightPaddleSprite= new Sprite("./assets/animations/pong paddle", 9, 0, 0);
+        Sprite ballSprite= new Sprite("./assets/animations/pong ball", 9, 0, 0);
+        // hitboxes
+        Hitbox leftPaddleHitbox= new Hitbox(-12, -64, 24, 128);
+        Hitbox rightPaddleHitbox= new Hitbox(-12, -64, 24, 128);
+        Hitbox ballHitbox= new Hitbox(-32, -32, 64, 64);
+        // game objects
+        leftPaddle= new GameObject(leftPaddleSprite, leftPaddleHitbox, 0, 0, 0, 0, 0, 0);
+        rightPaddle= new GameObject(rightPaddleSprite, rightPaddleHitbox, 0, 0, 0, 0, 0, 0);
+        ball= new GameObject(ballSprite, ballHitbox, 0, 0, 0, 0, 0, 0);
+        // setting initial positions
+        leftPaddle.setXY(x + 12, h/2);
+        rightPaddle.setXY(w - 12, h/2);
+        ball.setXY(w/2, h/2);
+        // adding objects to list
+        addObject(ball);
+        addObject(leftPaddle);
+        addObject(rightPaddle);
+    }
+```
+
+### Ball's initial speed
+We can write a method to set a random initial speed for ball. The right way of creating a random vector is to pick an angle and a length (instead of x and y factors) randomly and calculate the x and y factors of the vector using trigonometry.
+``` java
+    // set a random speed for ball
+    public void setRandomBallSpeed(){
+        Random random= new Random();
+        float theta= random.nextFloat(0, 2*3.1416f);
+        float length= random.nextFloat(5.0f, 10.0f);
+        float vx= (float)Math.cos(theta) * length;
+        float vy= (float)Math.sin(theta) * length;
+        ball.setVelocity(vx, vy);
+    }
+```
+
+### Update method
+Our `update` method should get the typed key as its parameter to apply it on game objects. Because of that, we won't use `@Override` before the method declaration. Let's add basic game mechanics to it and then add more features
+``` java
+    public void update(Character key){
+        // ball-wall collisions
+        if(ball.getY() >= sceneHeight || ball.getY() <= sceneOriginY){
+            ball.setVelocity(ball.getVX(), -ball.getVY());
+        }
+        // ball-paddle collisions
+        if(ball.collidesWith(leftPaddle)){
+            // set velocity to positive value.
+            ball.setVelocity(Math.abs(ball.getVX()), ball.getVY());
+        }
+        if(ball.collidesWith(rightPaddle)){
+            // set velocity to negative value.
+            ball.setVelocity(-Math.abs(ball.getVX()), ball.getVY());
+        }
+        // move paddles based on keyPress
+        if(key != null){
+            switch(key.charValue()){
+                case 'r':
+                    leftPaddle.setXY(leftPaddle.getX(), leftPaddle.getY()-10);
+                    break;
+                case 'f':
+                    leftPaddle.setXY(leftPaddle.getX(), leftPaddle.getY()+10);
+                    break;
+                case 'u':
+                    rightPaddle.setXY(rightPaddle.getX(), rightPaddle.getY()-10);
+                    break;
+                case 'j':
+                    rightPaddle.setXY(rightPaddle.getX(), rightPaddle.getY()+10);
+                    break;
+            }
+        }
+        // don't let the paddles move outside the scene
+        if(leftPaddle.getY() - leftPaddle.getHitbox().getHeight()/2 <= sceneOriginY)
+            leftPaddle.setXY(leftPaddle.getX(), sceneOriginY + leftPaddle.getHitbox().getHeight()/2);
+        if(leftPaddle.getY() + leftPaddle.getHitbox().getHeight()/2  >= sceneOriginY + sceneHeight)
+            leftPaddle.setXY(leftPaddle.getX(), sceneOriginY + sceneHeight - leftPaddle.getHitbox().getHeight()/2);
+        if(rightPaddle.getY() - rightPaddle.getHitbox().getHeight()/2 <= sceneOriginY)
+            rightPaddle.setXY(rightPaddle.getX(), sceneOriginY + rightPaddle.getHitbox().getHeight()/2);
+        if(rightPaddle.getY() + rightPaddle.getHitbox().getHeight()/2  >= sceneOriginY + sceneHeight)
+            rightPaddle.setXY(rightPaddle.getX(), sceneOriginY + sceneHeight - rightPaddle.getHitbox().getHeight()/2);
+        // updating the objects
+        ball.update();
+    }
+```
+
+Above code's comments are enough for their explanation *(I'm too lazy too write docs for it. Take it or leave it)*. Here's how you can test the scene:
+```java
+import myGame.SimpleGameWindow;
+import scenes.ClassicPong;
+
+public class Main{
+    public static void main(String args[]){
+        // game window and game scene
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        ClassicPong cp= new ClassicPong(3, 0, 800-20, 600);
+        cp.setRandomBallSpeed();
+        // game loop
+        while(true){
+            // clearing and drawing
+            sgw.clear();
+            sgw.drawGameScene(cp, true);
+            // updating physics
+            cp.update(sgw.getKey());
+            // delay
+            try{
+                Thread.sleep(10);
+            } catch(InterruptedException e){}
+        }
+    }
+}
+```
+
+### Score tracking and game over conditions
 
 
 
