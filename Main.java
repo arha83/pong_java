@@ -1,21 +1,22 @@
 import myGame.SimpleGameWindow;
-import scenes.DemoScene;
+import scenes.ClassicPong;
 
 public class Main{
     public static void main(String args[]){
         // game window and game scene
         SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
-        DemoScene ds= new DemoScene();
+        ClassicPong cp= new ClassicPong(3, 0, 800-20, 600);
+        cp.setRandomBallSpeed();
         // game loop
         while(true){
             // clearing and drawing
             sgw.clear();
-            sgw.drawGameScene(ds, true);
+            sgw.drawGameScene(cp, true);
             // updating physics
-            ds.update();
+            cp.update(sgw.getKey());
             // delay
             try{
-                Thread.sleep(50);
+                Thread.sleep(10);
             } catch(InterruptedException e){}
         }
     }
