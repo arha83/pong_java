@@ -1423,7 +1423,32 @@ public class Main{
 }
 ```
 
-### Score tracking and game over conditions
+### ball out of scene
+If the ball moves outside the scene, we should respawn it on center of the scene and give point to player on the other side.
+```java
+    private int leftPlayerScore= 0;
+    private int rightPlayerScore= 0;
+```
+In `update` method:
+```java
+        // all out of the scene
+        if(ball.getX() <= sceneOriginX - ball.getHitbox().getWidth()){ // right player scored
+            rightPlayerScore++;
+            ball.setXY(sceneOriginX + sceneWidth/2, sceneOriginY + sceneHeight/2);
+            setRandomBallSpeed();
+        }
+        if(ball.getX() >= sceneOriginX + sceneWidth + ball.getHitbox().getWidth()){ // left player scored
+            leftPlayerScore++;
+            ball.setXY(sceneOriginX + sceneWidth/2, sceneOriginY + sceneHeight/2);
+            setRandomBallSpeed();
+        }
+```
+
+### proportional bouncing
+The ball bouncing with constant angle is boring. We can make the ball bouncing proportional to where it touches the paddle; So players can change the angle of bouncing.
+```java
+
+```
 
 
 
