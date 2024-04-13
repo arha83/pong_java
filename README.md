@@ -1526,6 +1526,27 @@ Game dialoges are objets in game that inform player about the game and usually d
 
 ### Game start condition
 At the moment, the game starts as soon as the program is run. It's better to make it wait for a key press, like `space` , and then start the game. We can add a `gameStarted` flag to make sure that gameplay resumes, as long as the flag is set; oherwise, the game will wait for a specific key to be pressed.
+```java
+        // if game is not started, perform appropriate operations and leave the method (using return;)
+        if(!gameStarted){
+            dialog.setIndex(1);
+            if(key != null && key == ' '){
+                gameStarted= true;
+                dialog.setIndex(0);
+            }
+            return;
+        }
+```
+
+This code is added to beggning of the `update` method.
+
+### Game pause condition
+To pause the game we can simply reset the `gameStarted` flag in the switch/case of the `update` method.
+```java
+                case ' ':
+                    gameStarted= false;
+                    break;
+```
 
 
 
