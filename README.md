@@ -1445,10 +1445,81 @@ In `update` method:
 ```
 
 ### proportional bouncing
-The ball bouncing with constant angle is boring. We can make the ball bouncing proportional to where it touches the paddle; So players can change the angle of bouncing.
+The ball bouncing with constant angle is boring. We can make the ball bouncing proportional to where it touches the paddle; So players can change the angle of bouncing. We should process the angle calculations in the collision conditions.
+```java
+        float theta, velocityLength;
+        if(ball.collidesWith(leftPaddle)){
+            // calculate reflection angle and scale it so it won't be too vertical
+            theta= (float) Math.asin((2*(ball.getY()-leftPaddle.getY())) / (ball.getHitbox().getHeight() + leftPaddle.getHitbox().getHeight()));
+            theta*= 0.8;
+            // calculate current velocity vector length
+            velocityLength= (float) Math.sqrt(ball.getVX()*ball.getVX() + ball.getVY()*ball.getVY());
+            // reflection x factor is positive and calculate y reflection factor
+            ball.setVelocity((float) (velocityLength * Math.cos(theta)), (float) (velocityLength * Math.sin(theta)));
+        }
+        if(ball.collidesWith(rightPaddle)){
+            // calculate reflection angle and scale it so it won't be too vertical
+            theta= (float) Math.asin((2*(ball.getY()-rightPaddle.getY())) / (ball.getHitbox().getHeight() + rightPaddle.getHitbox().getHeight()));
+            theta*= 0.8;
+            // calculate current velocity vector length
+            velocityLength= (float) Math.sqrt(ball.getVX()*ball.getVX() + ball.getVY()*ball.getVY());
+            // reflection x factor is negative and calculate y reflection factor
+            ball.setVelocity((float) (-velocityLength * Math.cos(theta)), (float) (velocityLength * Math.sin(theta)));
+        }
+```
+
+### Keeping track of scores
+We need another two game objects to show display scores. To keep things easy, max score is 9 and the first player that reaches 10 will win.
+```java
+        // ball-paddle collisions
+        float theta, velocityLength, relation;
+        if(ball.collidesWith(leftPaddle)){
+            // calculate reflection angle and scale it so it won't be too vertical
+            relation= (2*(ball.getY()-leftPaddle.getY())) / (ball.getHitbox().getHeight() + leftPaddle.getHitbox().getHeight());
+            // checking if relation is out of bound
+            if(relation > 1) relation= 1;
+            if(relation < -1) relation= -1;
+            theta= (float) Math.asin(relation);
+            theta*= 0.8;
+            // calculate current velocity vector length
+            velocityLength= (float) Math.sqrt(ball.getVX()*ball.getVX() + ball.getVY()*ball.getVY());
+            // reflection x factor is positive and calculate y reflection factor
+            ball.setVelocity((float) (velocityLength * Math.cos(theta)), (float) (velocityLength * Math.sin(theta)));
+        }
+        if(ball.collidesWith(rightPaddle)){
+            // calculate reflection angle and scale it so it won't be too vertical
+            relation= (2*(ball.getY()-rightPaddle.getY())) / (ball.getHitbox().getHeight() + rightPaddle.getHitbox().getHeight());
+            // checking if relation is out of bound
+            if(relation > 1) relation= 1;
+            if(relation < -1) relation= -1;
+            theta= (float) Math.asin(relation);
+            theta*= 0.8;
+            // calculate current velocity vector length
+            velocityLength= (float) Math.sqrt(ball.getVX()*ball.getVX() + ball.getVY()*ball.getVY());
+            // reflection x factor is negative and calculate y reflection factor
+            ball.setVelocity((float) (-velocityLength * Math.cos(theta)), (float) (velocityLength * Math.sin(theta)));
+        }
+```
+
+score object are added to object list first; So they will be rendered first and ball will be displayed in front of them.
+
+Let's update player score objects' sprite in `update` method.
+```java
+        // updating the objects
+        leftScore.setIndex(leftPlayerScore);
+        rightScore.setIndex(rightPlayerScore);
+        ball.update();
+```
+
+### Game dialoge
+Game dialoges are objets in game that inform player about the game and usually don't have effects on gameplay itself. we can add a single dialog game object to our game scene and have all of dialogs and states as its sprite frames.
 ```java
 
 ```
+
+### Game start condition
+At the moment, the game starts as soon as the program is run. It's better to make it wait for a key press, like `space` , and then start the game. We can add a `gameStarted` flag to make sure that gameplay resumes, as long as the flag is set; oherwise, the game will wait for a specific key to be pressed.
+
 
 
 
