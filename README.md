@@ -3,10 +3,10 @@ This is an assignment project for my advanced programming class. The goal is to 
 
 Features that the game must have (based on TA's sayings):
 - [ ] Graphical User Interface
-- [ ] Gameplay mechanics *(Is there a game without gameplay mechanics???)*
-- [ ] Player controls *(Pong is not a zero-player game; Ofcourse it has player input 😑)*
+- [X] Gameplay mechanics *(Is there a game without gameplay mechanics???)*
+- [X] Player controls *(Pong is not a zero-player game; Ofcourse it has player input 😑)*
 - [X] Collision detection
-- [ ] Score tracking
+- [X] Score tracking
 - [ ] Game over conditions
 - [ ] Customization
 - [ ] Power-ups
@@ -70,7 +70,14 @@ Extra features for extra points:
    - [Using a scene](#using-a-scene)
 8. [Game engine!](#game-engine)
 9. [Classic pong](#classic-pong)
-    - [
+    - [Classic pong scene](#classic-pong-scene)
+    - [Classic pong constructor](#classic-pong-constructor)
+    - [Ball's initial speed](#balls-initial-speed)
+    - [Update method](#update-method)
+    - [ball out of scene](#ball-out-of-scene)
+    - [proportional bouncing](#proportional-bouncing)
+    - [Keeping track of scores](#keeping-track-of-scores)
+    - [Game dialoge](#game-dialoge)
 
 ## Getting started
 ### Creating a simple window
