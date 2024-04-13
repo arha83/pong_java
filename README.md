@@ -7,7 +7,7 @@ Features that the game must have (based on TA's sayings):
 - [X] Player controls *(Pong is not a zero-player game; Ofcourse it has player input 😑)*
 - [X] Collision detection
 - [X] Score tracking
-- [ ] Game over conditions
+- [X] Game over conditions
 - [ ] Customization
 - [ ] Power-ups
 
@@ -77,7 +77,10 @@ Extra features for extra points:
     - [ball out of scene](#ball-out-of-scene)
     - [proportional bouncing](#proportional-bouncing)
     - [Keeping track of scores](#keeping-track-of-scores)
-    - [Game dialoge](#game-dialoge)
+    - [Game dialog](#game-dialog)
+    - [Game start condition](#game-start-condition)
+    - [Game pause condition](#game-pause-condition)
+    - [Game over condition](#game-over-condition)
 
 ## Getting started
 ### Creating a simple window
@@ -1518,7 +1521,7 @@ Let's update player score objects' sprite in `update` method.
         ball.update();
 ```
 
-### Game dialoge
+### Game dialog
 Game dialoges are objets in game that inform player about the game and usually don't have effects on gameplay itself. we can add a single dialog game object to our game scene and have all of dialogs and states as its sprite frames.
 ```java
 
@@ -1547,6 +1550,47 @@ To pause the game we can simply reset the `gameStarted` flag in the switch/case 
                     gameStarted= false;
                     break;
 ```
+
+### Game over condition
+The game ends when a player's score reaches 10. At this moment, winner should be announced and the game should pause. To do that, we can reset `gameStarted` and show winner dialog in the pause condition instead of only showing pause dialog in it. We also need another flag to indicate game over, so we can reset game when the game is ended and not paused.
+```java
+        if(!gameStarted){
+            // game over dialog; show announcement and reset game. Otherwise, show the pause dialog
+            if(gameOver){
+                if(leftPlayerScore > rightPlayerScore) dialog.setIndex(2);
+                else dialog.setIndex(3);
+            } else dialog.setIndex(1);
+            // start/resume game
+            if(key != null && key == ' '){
+                gameStarted= true;
+                // resetting if the game has ended
+                if(gameOver){
+                    // resetting
+                    leftPlayerScore= 0;
+                    rightPlayerScore= 0;
+                    leftPaddle.setXY(sceneOriginX + 12, sceneHeight/2);
+                    rightPaddle.setXY(sceneWidth - 12, sceneHeight/2);
+                    ball.setXY(sceneWidth/2 + sceneOriginX, sceneHeight/2 + sceneOriginY);
+                    leftScore.setXY(sceneOriginX + sceneWidth/2 - 32 , 20);
+                    rightScore.setXY(sceneOriginX + sceneWidth/2 + 32, 20);
+                    dialog.setXY(sceneOriginX + sceneWidth/2, sceneOriginY + sceneHeight/2);
+                    gameOver= false;
+                }
+                dialog.setIndex(0);
+            }
+            return;
+        }
+```
+
+After processing the out of bounds condition for the ball, we can check the score; If it has reached 10, pause the game (reset the `gameStarted` flag) and set the `gameOver` flag.
+```java
+        // set game over flag if a player score is 10
+        if(leftPlayerScore == 3 || rightPlayerScore == 3){
+            gameOver= true;
+            gameStarted= false;
+        }
+```
+
 
 
 
