@@ -81,6 +81,8 @@ Extra features for extra points:
     - [Game start condition](#game-start-condition)
     - [Game pause condition](#game-pause-condition)
     - [Game over condition](#game-over-condition)
+    - [Sound effects](#sound-effects)
+    - [Exiting the game](#exiting-the-game)
 
 ## Getting started
 ### Creating a simple window
@@ -1611,13 +1613,15 @@ Constructor method:
         gameOverSound.initAudioStream();
 ```
 
-Game over condition:
+Game over setting:
 ```java
-            // game over dialog; show announcement and reset game. Otherwise, show the pause dialog
-            if(gameOver){
-                theme.pause();
-                gameOverSound.restart();
-                gameOverSound.play();
+        // set game over flag if a player score is 10
+        if(leftPlayerScore == 1 || rightPlayerScore == 1){
+            gameOver= true;
+            gameStarted= false;
+            gameOverSound.restart();
+            gameOverSound.play();
+        }
 ```
 
 Game start condition:
@@ -1643,6 +1647,48 @@ Paddle collision condition:
             paddleCollisionSound.play();
 ```
 
+### Exiting the game
+Lastly, we need to have a key to exit the game. At the moment, there is no way we can exit the game without terminating the program process; So let's add a `close` method to `SimpleGameWindow` class to close the window. It's pretty easy.
+```java
+    // this method closes the frame???
+    public void close(){
+        frame.setVisible(false);
+        frame.dispose();
+    }
+```
+
+Then let's store the typed key in a variable instead of passing it directly to the update method. With that, we can check if the typed key is something like `'q'`; If so, we break the while loop and close the window.
+```java
+import Chai.SimpleGameWindow;
+import scenes.ClassicPong;
+
+public class Main{
+    public static void main(String args[]){
+        // game window and game scene
+        SimpleGameWindow sgw= new SimpleGameWindow(800, 600, "woooooop");
+        ClassicPong cp= new ClassicPong(3, 0, 800-20, 600);
+        cp.setRandomBallSpeed();
+        // game loop
+        while(true){
+            // clearing and drawing
+            sgw.clear();
+            sgw.drawGameScene(cp, false);
+            // getting typed key and exiting if it is 'q'
+            Character input= sgw.getKey();
+            if(input != null && input == 'q') break;
+            // updating physics
+            cp.update(input);
+            // delay
+            try{
+                Thread.sleep(10);
+            } catch(InterruptedException e){}
+        }
+        sgw.close();
+    }
+}
+```
+
+That's our classic pong game, done and dusted!
 
 
 
