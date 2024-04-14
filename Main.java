@@ -1,4 +1,4 @@
-import myGame.SimpleGameWindow;
+import Chai.SimpleGameWindow;
 import scenes.ClassicPong;
 
 public class Main{
@@ -11,13 +11,17 @@ public class Main{
         while(true){
             // clearing and drawing
             sgw.clear();
-            sgw.drawGameScene(cp, true);
+            sgw.drawGameScene(cp, false);
+            // getting typed key and exiting if it is 'q'
+            Character input= sgw.getKey();
+            if(input != null && input == 'q') break;
             // updating physics
-            cp.update(sgw.getKey());
+            cp.update(input);
             // delay
             try{
                 Thread.sleep(10);
             } catch(InterruptedException e){}
         }
+        sgw.close();
     }
 }

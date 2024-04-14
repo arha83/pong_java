@@ -1,7 +1,9 @@
 package scenes;
 
-import myGame.*;
 import java.util.Random;
+
+import Chai.*;
+
 import java.lang.Math;
 // class declaration
 public class ClassicPong extends GameScene{
@@ -11,6 +13,7 @@ public class ClassicPong extends GameScene{
     private int leftPlayerScore= 0;
     private int rightPlayerScore= 0;
     private boolean gameStarted= false;
+    private boolean gameOver= false;
     // game objects
     GameObject leftPaddle;
     GameObject rightPaddle;
@@ -18,6 +21,10 @@ public class ClassicPong extends GameScene{
     GameObject leftScore;
     GameObject rightScore;
     GameObject dialog;
+    // sounds
+    AudioPlayer theme;
+    AudioPlayer paddleCollisionSound;
+    AudioPlayer gameOverSound;
     // constructor
     public ClassicPong(int x, int y, int w, int h){
         super();
@@ -25,13 +32,20 @@ public class ClassicPong extends GameScene{
         sceneOriginY= y;
         sceneWidth= w;
         sceneHeight= h;
+        // initializing sounds
+        theme= new AudioPlayer("./assets/sfx/theme 1.wav");
+        paddleCollisionSound= new AudioPlayer("./assets/sfx/boop.wav");
+        gameOverSound= new AudioPlayer("./assets/sfx/game over.wav");
+        theme.initAudioStream();
+        paddleCollisionSound.initAudioStream();
+        gameOverSound.initAudioStream();
         // sprites
         Sprite leftPaddleSprite= new Sprite("./assets/animations/pong paddle", 9, 0, 0);
         Sprite rightPaddleSprite= new Sprite("./assets/animations/pong paddle", 9, 0, 0);
         Sprite ballSprite= new Sprite("./assets/animations/pong ball", 9, 0, 0);
         Sprite leftScoreSprite= new Sprite("./assets/animations/score", 11, 0, 0);
         Sprite rightScoreSprite= new Sprite("./assets/animations/score", 11, 0, 0);
-        Sprite dialogSprite= new Sprite("./assets/animations/dialog 1", 3, 0, 0);
+        Sprite dialogSprite= new Sprite("./assets/animations/dialog 1", 4, 0, 0);
         // hitboxes
         Hitbox leftPaddleHitbox= new Hitbox(-12, -64, 24, 128);
         Hitbox rightPaddleHitbox= new Hitbox(-12, -64, 24, 128);
@@ -74,9 +88,32 @@ public class ClassicPong extends GameScene{
     public void update(Character key){
         // if game is not started, perform appropriate operations and leave the method (using return;)
         if(!gameStarted){
-            dialog.setIndex(1);
+            // stop theme sound
+            theme.pause();
+            // game over dialog; show announcement and reset game. Otherwise, show the pause dialog
+            if(gameOver){
+                theme.pause();
+                if(leftPlayerScore > rightPlayerScore) dialog.setIndex(2);
+                else dialog.setIndex(3);
+            } else dialog.setIndex(1);
+            // start/resume game
             if(key != null && key == ' '){
                 gameStarted= true;
+                // start theme sound
+                theme.loop();
+                // resetting if the game has ended
+                if(gameOver){
+                    // resetting
+                    leftPlayerScore= 0;
+                    rightPlayerScore= 0;
+                    leftPaddle.setXY(sceneOriginX + 12, sceneHeight/2);
+                    rightPaddle.setXY(sceneWidth - 12, sceneHeight/2);
+                    ball.setXY(sceneWidth/2 + sceneOriginX, sceneHeight/2 + sceneOriginY);
+                    leftScore.setXY(sceneOriginX + sceneWidth/2 - 32 , 20);
+                    rightScore.setXY(sceneOriginX + sceneWidth/2 + 32, 20);
+                    dialog.setXY(sceneOriginX + sceneWidth/2, sceneOriginY + sceneHeight/2);
+                    gameOver= false;
+                }
                 dialog.setIndex(0);
             }
             return;
@@ -99,6 +136,9 @@ public class ClassicPong extends GameScene{
             velocityLength= (float) Math.sqrt(ball.getVX()*ball.getVX() + ball.getVY()*ball.getVY());
             // reflection x factor is positive and calculate y reflection factor
             ball.setVelocity((float) (velocityLength * Math.cos(theta)), (float) (velocityLength * Math.sin(theta)));
+            // play sound
+            paddleCollisionSound.restart();
+            paddleCollisionSound.play();
         }
         if(ball.collidesWith(rightPaddle)){
             // calculate reflection angle and scale it so it won't be too vertical
@@ -112,6 +152,9 @@ public class ClassicPong extends GameScene{
             velocityLength= (float) Math.sqrt(ball.getVX()*ball.getVX() + ball.getVY()*ball.getVY());
             // reflection x factor is negative and calculate y reflection factor
             ball.setVelocity((float) (-velocityLength * Math.cos(theta)), (float) (velocityLength * Math.sin(theta)));
+            // play sound
+            paddleCollisionSound.restart();
+            paddleCollisionSound.play();
         }
         // all out of the scene
         if(ball.getX() <= sceneOriginX - ball.getHitbox().getWidth()){ // right player scored
@@ -123,6 +166,13 @@ public class ClassicPong extends GameScene{
             leftPlayerScore++;
             ball.setXY(sceneOriginX + sceneWidth/2, sceneOriginY + sceneHeight/2);
             setRandomBallSpeed();
+        }
+        // set game over flag if a player score is 10
+        if(leftPlayerScore == 10 || rightPlayerScore == 10){
+            gameOver= true;
+            gameStarted= false;
+            gameOverSound.restart();
+            gameOverSound.play();
         }
         // move paddles based on keyPress
         if(key != null){

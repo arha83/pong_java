@@ -1,7 +1,8 @@
 package scenes;
 
 import java.util.Random;
-import myGame.*;
+
+import Chai.*;
 // class definition and inheritance
 public class DemoScene extends GameScene {
     // declaring scene objects
