@@ -1591,6 +1591,57 @@ After processing the out of bounds condition for the ball, we can check the scor
         }
 ```
 
+### Sound effects
+For now, we can include these sound effects: game theme, paddle collision, game over. Class properties:
+```java
+    // sounds
+    AudioPlayer theme;
+    AudioPlayer paddleCollisionSound;
+    AudioPlayer gameOverSound;
+```
+
+Constructor method:
+```java
+        // initializing sounds
+        theme= new AudioPlayer("./assets/sfx/theme 1.wav");
+        paddleCollisionSound= new AudioPlayer("./assets/sfx/boop.wav");
+        gameOverSound= new AudioPlayer("./assets/sfx/game over.wav");
+        theme.initAudioStream();
+        paddleCollisionSound.initAudioStream();
+        gameOverSound.initAudioStream();
+```
+
+Game over condition:
+```java
+            // game over dialog; show announcement and reset game. Otherwise, show the pause dialog
+            if(gameOver){
+                theme.pause();
+                gameOverSound.restart();
+                gameOverSound.play();
+```
+
+Game start condition:
+```java
+            // start/resume game
+            if(key != null && key == ' '){
+                gameStarted= true;
+                // start theme sound
+                theme.loop();
+```
+
+Game pause condition:
+```java
+        if(!gameStarted){
+            // stop theme sound
+            theme.pause();
+```
+
+Paddle collision condition:
+```java
+            // play sound
+            paddleCollisionSound.restart();
+            paddleCollisionSound.play();
+```
 
 
 
